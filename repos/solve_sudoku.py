@@ -1,4 +1,4 @@
-import module1
+import MainScript
 import numpy as np
 
 flag = False
@@ -20,7 +20,7 @@ while flag == False:
     else:
         flag = False
 
-solver = module1.main(sud)
+solver = MainScript.main(sud)
 answer = solver.solve()
 print('\n')
 print('Result:')

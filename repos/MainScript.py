@@ -23,6 +23,8 @@ class main():
     
     def __init__(self, main):
         self.a = main
+        self.shadow = self.a.copy()
+        self.last = self.a.copy()
         
     def solve(self):
         s = solver()
@@ -30,20 +32,19 @@ class main():
         con = 0
         while self.check(self.a) and con < 500:
             print(count)
-            g = s.get_bin(self.a, count)
-            b = s.cut(g)
-            c = s.evaluate_bin(b, self.a)
-            d = s.cut(c)
-            e = s.evaluate_prob(d)
-            print(c)
-            print(e)
-            self.a = s.fill_in(self.a, e, count)
+            for i in range(9):
+                probability = s.get_bin(self.a, i)
+                cut = s.cut(probability)
+                probability = s.evaluate_bin(cut, self.a)
+                cut = s.cut(probability)
+                probability = s.evaluate_prob(cut)
+                self.a = s.fill_in(self.a, probability, i)
+            if np.allclose(self.a, self.shadow):
+                self.last = self.a.copy()
+                reply = s.solution(self.a)
+                print(reply)
             print(self.a)
-            if count < 9:
-                count += 1
-            elif count == 9:
-                count = 1
-            con += 1
+            self.shadow = self.a.copy()
         return self.a
 
 if __name__ == "__main__":

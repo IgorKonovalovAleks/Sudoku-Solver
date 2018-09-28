@@ -25,12 +25,33 @@ class sudoku_solver():
                        [[6,3], [6,4], [6,5], [7,3], [7,4], [7,5], [8,3], [8,4], [8,5]],
                        [[6,6], [6,7], [6,8], [7,6], [7,7], [7,8], [8,6], [8,7], [8,8]]])
 
+    def __init__(self):
+        self.attempt = 0
+        self.number = 1
+
     def fill_in(self, main, prob, number):
         for i in range(9):
             for j in range(9):
                 if prob[i, j] == 100:
                     main[i, j] = number
         return main
+
+    def fill(self, main, index, number):
+        main[index[0], index[1]] = number
+        return main
+
+    def solution(self, main):
+        probability = self.get_bin(main, self.number)
+        cut = self.cut(probability)
+        probability = self.evaluate_bin(cut, main)
+        cut = self.cut(probability)
+        probability = self.evaluate_prob(cut)
+        indeces = np.nonzero(probability)
+        if self.attempt < 8:
+            self.attempt += 1
+        else:
+            self.attempt = 0
+        return tuple((indeces[0][self.attempt], indeces[1][self.attempt]))
 
     def evaluate_bin(self, cut, main):
         binnary = np.array([False for i in range(81)]).reshape((9, 9))
@@ -58,7 +79,6 @@ class sudoku_solver():
                     uncollected[i, j] = 100 / count
                 else:
                     continue
-        print(cut)
         for i in range(9):
             for j in range(9):
                 if cut[i, j]:
