@@ -22,6 +22,7 @@ while flag == False:
 
 solver = MainScript.main(sud)
 answer = solver.solve()
-print('\n')
+print("\n")
 print('Result:')
 print(answer)
+input()

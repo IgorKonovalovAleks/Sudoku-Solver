@@ -9,9 +9,6 @@
 #       [0, 0, 0, 9, 0, 5, 4, 0, 1]])
 import numpy as np
 
-#This code doesn't work yet
-
-
 
 class sudoku_solver():
 
@@ -36,22 +33,44 @@ class sudoku_solver():
                     main[i, j] = number
         return main
 
-    def fill(self, main, index, number):
-        main[index[0], index[1]] = number
+    def fill(self, main, index):
+        main[index[0], index[1]] = self.number
         return main
 
     def solution(self, main):
+        print(self.number)
+        print(self.attempt)
+        if self.number == 10:
+            self.number = 1
+            reply = self.solution(main)
+            return reply
         probability = self.get_bin(main, self.number)
         cut = self.cut(probability)
         probability = self.evaluate_bin(cut, main)
         cut = self.cut(probability)
         probability = self.evaluate_prob(cut)
-        indeces = np.nonzero(probability)
-        if self.attempt < 8:
+        print(probability)
+        maximum = np.max(probability)
+        if maximum == 0:
+            print('no more cells to fill in')
+            return None
+        print(maximum)
+        indeces = list()
+        for i in range(9):
+            for j in range(9):
+                if probability[i, j] == maximum:
+                    indeces.append((i, j))
+        print(indeces)
+        try:
+            reply = tuple((indeces[self.attempt][0], indeces[self.attempt][1]))
+        except IndexError:
+            reply = None
+        if self.attempt < len(indeces):
             self.attempt += 1
         else:
-            self.attempt = 0
-        return tuple((indeces[0][self.attempt], indeces[1][self.attempt]))
+            self.number += 1
+            reply = self.solution(main)
+        return reply
 
     def evaluate_bin(self, cut, main):
         binnary = np.array([False for i in range(81)]).reshape((9, 9))
@@ -69,7 +88,6 @@ class sudoku_solver():
         return binnary
 
     def evaluate_prob(self, cut):
-        print(cut.shape)
         reply = np.array([0 for i in range(81)]).reshape((9, 9))
         uncollected = np.array([0.0 for i in range(243)]).reshape((27, 9))
         for i in range(27):
